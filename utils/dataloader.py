@@ -70,4 +70,10 @@ def get_dataloader(root_dir, batch_size=8, shuffle=True):
 
     dataset = VideoDataset(root_dir, transform=transform)
 
-    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=4,
+        pin_memory=True
+    )
