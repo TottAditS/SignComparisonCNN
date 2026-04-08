@@ -32,7 +32,7 @@ class Attention(nn.Module):
 
 
 class CNN_LSTM(nn.Module):
-    def __init__(self, num_classes, hidden_dim=256):
+    def __init__(self, num_classes, hidden_dim=128):
         super().__init__()
 
         self.encoder = CNN_Encoder()

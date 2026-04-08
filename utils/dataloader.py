@@ -65,7 +65,9 @@ class VideoDataset(Dataset):
 def get_dataloader(root_dir, batch_size=8, shuffle=True):
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.RandomHorizontalFlip(),
+        transforms.ColorJitter(brightness=0.2),
     ])
 
     dataset = VideoDataset(root_dir, transform=transform)
