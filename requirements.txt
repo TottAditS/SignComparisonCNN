@@ -1,0 +1,26 @@
+# --- Deep Learning PyTorch ---
+torch
+torchvision
+torchaudio
+
+# --- YOLO Ultralytics ---
+ultralytics
+
+# --- Computer Vision & Image Processing ---
+opencv-python
+numpy
+Pillow
+
+# --- Data Analysis & Visualization ---
+pandas
+matplotlib
+seaborn
+scipy
+
+# --- Logging & Monitoring ---
+tensorboard
+tensorboardX
+
+# --- Utilities & Evaluation Metrics ---
+scikit-learn
+tqdm
