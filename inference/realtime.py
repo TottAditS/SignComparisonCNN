@@ -52,7 +52,7 @@ model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
 model.to(DEVICE)
 model.eval()
 
-print("✅ Model loaded")
+print("Model loaded")
 
 # ================= FRAME BUFFER =================
 frame_buffer = deque(maxlen=SEQ_LEN)
@@ -63,10 +63,10 @@ pred_buffer = deque(maxlen=PRED_BUFFER_SIZE)
 cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
-    print("❌ Webcam tidak bisa dibuka")
+    print("Webcam tidak bisa dibuka")
     exit()
 
-print("🚀 Realtime started (ESC untuk keluar)")
+print("Realtime started (ESC untuk keluar)")
 
 while True:
     ret, frame = cap.read()
