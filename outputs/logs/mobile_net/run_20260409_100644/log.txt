@@ -1,0 +1,60 @@
+Epoch 1/10
+Train Loss: 3.6099 | Acc: 0.0414
+Val   Loss: 3.4260 | Acc: 0.0769
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 2/10
+Train Loss: 3.3406 | Acc: 0.0862
+Val   Loss: 3.1129 | Acc: 0.1099
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 3/10
+Train Loss: 2.9862 | Acc: 0.1590
+Val   Loss: 2.7822 | Acc: 0.2143
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 4/10
+Train Loss: 2.5519 | Acc: 0.2587
+Val   Loss: 2.4677 | Acc: 0.3022
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 5/10
+Train Loss: 2.2136 | Acc: 0.3337
+Val   Loss: 2.0803 | Acc: 0.3736
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 6/10
+Train Loss: 1.9867 | Acc: 0.3785
+Val   Loss: 1.8480 | Acc: 0.4341
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 7/10
+Train Loss: 1.6856 | Acc: 0.4737
+Val   Loss: 1.6490 | Acc: 0.4945
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 8/10
+Train Loss: 1.5559 | Acc: 0.5162
+Val   Loss: 1.5661 | Acc: 0.5440
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 9/10
+Train Loss: 1.4438 | Acc: 0.5554
+Val   Loss: 1.5050 | Acc: 0.5495
+LR: 3e-05
+----------------------------------------
+Best model saved!
+Epoch 10/10
+Train Loss: 1.3530 | Acc: 0.5554
+Val   Loss: 1.3261 | Acc: 0.5769
+LR: 3e-05
+----------------------------------------
+Best model saved!
