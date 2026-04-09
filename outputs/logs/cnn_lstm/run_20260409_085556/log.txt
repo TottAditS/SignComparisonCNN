@@ -1,0 +1,62 @@
+Epoch 1/10
+Train Loss: 3.4466 | Acc: 0.0705
+Val   Loss: 3.3721 | Acc: 0.1538
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 2/10
+Train Loss: 3.2234 | Acc: 0.1209
+Val   Loss: 3.0922 | Acc: 0.1209
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 3/10
+Train Loss: 2.8780 | Acc: 0.1534
+Val   Loss: 2.5937 | Acc: 0.2747
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 4/10
+Train Loss: 2.6025 | Acc: 0.2161
+Val   Loss: 2.3880 | Acc: 0.2637
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 5/10
+Train Loss: 2.3982 | Acc: 0.2654
+Val   Loss: 2.1526 | Acc: 0.3571
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 6/10
+Train Loss: 2.1985 | Acc: 0.3247
+Val   Loss: 1.9593 | Acc: 0.3956
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 7/10
+Train Loss: 2.0258 | Acc: 0.3561
+Val   Loss: 1.8197 | Acc: 0.4725
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 8/10
+Train Loss: 1.8688 | Acc: 0.4177
+Val   Loss: 1.6553 | Acc: 0.5000
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 9/10
+Train Loss: 1.7192 | Acc: 0.4412
+Val   Loss: 1.5280 | Acc: 0.5000
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Epoch 10/10
+Train Loss: 1.6223 | Acc: 0.4737
+Val   Loss: 1.4062 | Acc: 0.5769
+LR: 0.0001
+----------------------------------------
+Best model saved!
+Test Accuracy: 0.5605
+{'accuracy': 0.5246636771300448, 'precision': 0.4395119409099672, 'recall': 0.4821428571428571, 'f1': 0.4223035556117902}
