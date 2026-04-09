@@ -41,14 +41,26 @@ class VideoDataset(Dataset):
         vid_path = self.samples[idx]
         label = self.labels[idx]
 
-        frames = sorted(os.listdir(vid_path))[:self.seq_len]
+        frame_list = sorted(os.listdir(vid_path))
+
+        # 🔥 FRAME SAMPLING (FIXED)
+        if len(frame_list) >= self.seq_len:
+            indices = torch.linspace(0, len(frame_list) - 1, self.seq_len).long()
+            frames = [frame_list[i] for i in indices]
+        else:
+            frames = frame_list
 
         imgs = []
+
+        # 🔥 SEQUENCE-CONSISTENT AUGMENTATION
+        seed = torch.randint(0, 10000, (1,)).item()
+
         for frame in frames:
             img_path = os.path.join(vid_path, frame)
             img = Image.open(img_path).convert("RGB")
 
             if self.transform:
+                torch.manual_seed(seed)
                 img = self.transform(img)
 
             imgs.append(img)
@@ -62,14 +74,32 @@ class VideoDataset(Dataset):
         return imgs, label
 
 
-def get_dataloader(root_dir, batch_size=8, shuffle=True):
-    transform = transforms.Compose([
+# 🔥 TRANSFORMS DIPISAH
+def get_transforms():
+    train_transform = transforms.Compose([
         transforms.Resize((224, 224)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2),
         transforms.ToTensor(),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.2),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
     ])
 
+    val_transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
+    ])
+
+    return train_transform, val_transform
+
+
+def get_dataloader(root_dir, batch_size=8, shuffle=True, transform=None):
     dataset = VideoDataset(root_dir, transform=transform)
 
     return DataLoader(
