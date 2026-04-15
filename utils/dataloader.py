@@ -5,7 +5,6 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from PIL import Image
 import torchvision.transforms as transforms
 
-
 class VideoDataset(Dataset):
     def __init__(self, root_dir, seq_len=20, transform=None):
         self.root_dir = root_dir
@@ -38,7 +37,7 @@ class VideoDataset(Dataset):
                 if not os.path.isdir(vid_path):
                     continue
 
-                # pastikan ada frame di dalamnya
+                # test apakah ada frame
                 frames = [f for f in os.listdir(vid_path) if f.endswith(".jpg")]
                 if len(frames) == 0:
                     continue
@@ -68,7 +67,7 @@ class VideoDataset(Dataset):
         imgs = []
         prev_img = None
 
-        # seed biar augment konsisten per sequence
+        # seed augment konsisten per sequence
         seed = torch.randint(0, 10000, (1,)).item()
 
         for frame in frames:
@@ -89,15 +88,15 @@ class VideoDataset(Dataset):
             else:
                 diff = img - prev_img
 
-            # gabung jadi 6 channel
+            # 6 channel
             img_6ch = torch.cat([img, diff], dim=0)  # (6, H, W)
 
             imgs.append(img_6ch)
 
-            # simpan frame sebelumnya
+            # save frame sebelumnya
             prev_img = img
 
-        # ===== HANDLE KASUS FRAME KOSONG =====
+        # ===== HANDLE FRAME KOSONG =====
         if len(imgs) == 0:
             dummy = torch.zeros(6, 224, 224)
             imgs = [dummy for _ in range(self.seq_len)]
@@ -111,9 +110,9 @@ class VideoDataset(Dataset):
         return imgs, label
 
 
-# =========================
-# TRANSFORMS
-# =========================
+
+# Augmentasi Pre Process Dataset
+
 def get_transforms():
     train_transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -145,9 +144,9 @@ def get_transforms():
     return train_transform, val_transform
 
 
-# =========================
+
 # DATALOADER + IMBALANCE HANDLING
-# =========================
+
 def get_dataloader(
     root_dir,
     batch_size=8,
@@ -193,10 +192,8 @@ def get_dataloader(
 
     return loader, dataset
 
-
-# =========================
 # CLASS WEIGHT (FOR LOSS)
-# =========================
+
 def get_class_weights(dataset, device):
     labels = dataset.labels
     class_counts = np.bincount(labels)

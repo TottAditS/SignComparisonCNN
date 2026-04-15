@@ -2,20 +2,17 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
 
+# CNN ENCODER
 
-# =========================
-# CNN ENCODER (UPGRADE)
-# =========================
 class CNN_Encoder(nn.Module):
     def __init__(self, feature_dim=512):
         super().__init__()
 
         base_model = resnet18(weights=ResNet18_Weights.DEFAULT)
 
-        # ambil conv pertama
         first_conv = base_model.conv1
 
-        # bikin conv baru (6 channel)
+        # conv  (6 channel)
         new_conv = nn.Conv2d(
             in_channels=6,
             out_channels=first_conv.out_channels,
@@ -25,7 +22,7 @@ class CNN_Encoder(nn.Module):
             bias=False
         )
 
-        # copy weight RGB → ke 6 channel
+        # copy weight RGB → 6 channel
         with torch.no_grad():
             new_conv.weight[:, :3] = first_conv.weight
             new_conv.weight[:, 3:] = first_conv.weight
@@ -33,7 +30,7 @@ class CNN_Encoder(nn.Module):
         # replace conv1
         base_model.conv1 = new_conv
 
-        # ambil semua layer kecuali FC
+        #
         self.cnn = nn.Sequential(*list(base_model.children())[:-1])
 
         self.fc = nn.Sequential(
@@ -49,10 +46,8 @@ class CNN_Encoder(nn.Module):
         x = self.fc(x)
         return x
 
+# ATTENTION
 
-# =========================
-# ATTENTION (UPGRADE)
-# =========================
 class Attention(nn.Module):
     def __init__(self, hidden_dim):
         super().__init__()
@@ -69,12 +64,10 @@ class Attention(nn.Module):
         context = (lstm_out * weights).sum(dim=1)
         return context
 
+# MAIN MODEL
 
-# =========================
-# MAIN MODEL (UPGRADE)
-# =========================
 class CNN_LSTM(nn.Module):
-    def __init__(self, num_classes, hidden_dim=256):  # ⬅️ naik dari 128
+    def __init__(self, num_classes, hidden_dim=256):
         super().__init__()
 
         self.encoder = CNN_Encoder()
@@ -84,7 +77,7 @@ class CNN_LSTM(nn.Module):
             hidden_size=hidden_dim,
             num_layers=2,
             batch_first=True,
-            dropout=0.5  # ⬅️ lebih kuat
+            dropout=0.5
         )
 
         self.attention = Attention(hidden_dim)

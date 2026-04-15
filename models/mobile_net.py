@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 
-
 class MobileNetEncoder(nn.Module):
     def __init__(self):
         super().__init__()
@@ -47,7 +46,6 @@ class MobileNetEncoder(nn.Module):
 
         return x
 
-
 class TransformerHead(nn.Module):
     def __init__(self, input_dim, num_heads=8, num_layers=4):
         super().__init__()
@@ -67,17 +65,16 @@ class TransformerHead(nn.Module):
     def forward(self, x):
         return self.transformer(x)
 
-
 class MobileNetTransformer(nn.Module):
     def __init__(self, num_classes, seq_len=20):
         super().__init__()
 
         self.encoder = MobileNetEncoder()
 
-        #  PROJECTION (WAJIB)
+        #  PROJECTION
         self.proj = nn.Linear(1280, 512)
 
-        #  posisi embedding sesuai dim baru
+        #  posisi embedding
         self.pos_embedding = nn.Parameter(
             torch.randn(1, seq_len, 512) * 0.02
         )
@@ -100,7 +97,7 @@ class MobileNetTransformer(nn.Module):
         # (B, T, C, H, W)
         x = self.encoder(x)
 
-        #  projection dulu
+        #  projection
         x = self.proj(x)
 
         # positional encoding

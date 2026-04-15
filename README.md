@@ -1,4 +1,4 @@
-### **Skenario 1: Melatih Model Dari Awal (Train from Scratch)**
+### **Skenario 1: Melatih Model Dari Awal**
 1. **Ekstrak Proyek:** *Unzip* file `cleanProjek.zip` ke folder kerja.
 2. **Persiapan Dataset:** Masukkan video ke `data/NamaDataset/raw/`. Jika ada penambahan data, sesuaikan nama dataset pada skrip terkait agar *path* direktori cocok.
 3. **Ekstraksi Frame:** Jalankan skrip ekstraksi frame di folder `scripts`.
@@ -8,11 +8,12 @@
 7. **Proses Training:** Mulai pelatihan model melalui skrip di folder `train`.
 8. **Monitoring Log:** Ketik `tensorboard --logdir=outputs/logs` di terminal, lalu buka `http://localhost:6006` di browser.
 9. **Cek Hasil Evaluasi:** Buka file `Outputs/logs/model/runX/evaluation.json` untuk melihat detail metrik model.
-10. **Uji Real-time:** Jalankan `realtime.py` di folder `inference` untuk tes model menggunakan kamera.
+10. **Uji Real-time:** Jalankan `test_cnn.ipynb` atau `test_mobilenet.ipynb` di folder `script` untuk tes model menggunakan kamera.
 
 ---
 
-### **Skenario 2: Menggunakan Model Pre-trained (Siap Pakai)**
+### **Skenario 2: Langsung Test Model**
 1. **Persiapan:** Gunakan repository lengkap (bukan versi *clean project*).
-2. **Akses Log & Evaluasi:** Langsung cek performa model lama melalui Tensorboard atau file `.json` di folder `Outputs`.
-3. **Uji Real-time:** Jalankan `realtime.py` di folder `inference` untuk mencoba model yang sudah terlatih.
+2. **Monitoring Log:** Ketik `tensorboard --logdir=outputs/logs` di terminal, lalu buka `http://localhost:6006` di browser.
+3. **Akses Log & Evaluasi:** Langsung cek performa model lama melalui Tensorboard atau file `.json` di folder `Outputs`.
+4. **Uji Real-time:** Jalankan `test_cnn.ipynb` atau `test_mobilenet.ipynb` di folder `script` untuk tes model menggunakan kamera.
