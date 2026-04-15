@@ -58,9 +58,7 @@ class VideoDataset(Dataset):
             if f.endswith(".jpg")
         ])
 
-        # =========================
-        # FRAME SAMPLING (FIXED)
-        # =========================
+        # ===== FRAME SAMPLING =====
         if len(frame_list) >= self.seq_len:
             indices = torch.linspace(0, len(frame_list) - 1, self.seq_len).long()
             frames = [frame_list[i] for i in indices]
@@ -68,10 +66,9 @@ class VideoDataset(Dataset):
             frames = frame_list
 
         imgs = []
+        prev_img = None
 
-        # =========================
-        # SEQUENCE CONSISTENT AUGMENT
-        # =========================
+        # seed biar augment konsisten per sequence
         seed = torch.randint(0, 10000, (1,)).item()
 
         for frame in frames:
@@ -84,17 +81,32 @@ class VideoDataset(Dataset):
 
             if self.transform:
                 torch.manual_seed(seed)
-                img = self.transform(img)
+                img = self.transform(img)  # (3, H, W)
 
-            imgs.append(img)
+            # ===== TEMPORAL DIFF =====
+            if prev_img is None:
+                diff = torch.zeros_like(img)
+            else:
+                diff = img - prev_img
 
-        # =========================
-        # PADDING
-        # =========================
+            # gabung jadi 6 channel
+            img_6ch = torch.cat([img, diff], dim=0)  # (6, H, W)
+
+            imgs.append(img_6ch)
+
+            # simpan frame sebelumnya
+            prev_img = img
+
+        # ===== HANDLE KASUS FRAME KOSONG =====
+        if len(imgs) == 0:
+            dummy = torch.zeros(6, 224, 224)
+            imgs = [dummy for _ in range(self.seq_len)]
+
+        # ===== PADDING =====
         while len(imgs) < self.seq_len:
             imgs.append(imgs[-1])
 
-        imgs = torch.stack(imgs)  # (T, C, H, W)
+        imgs = torch.stack(imgs)  # (T, 6, H, W)
 
         return imgs, label
 

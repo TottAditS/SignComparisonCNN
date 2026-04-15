@@ -36,6 +36,7 @@ class TransformerHead(nn.Module):
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=input_dim,
             nhead=num_heads,
+            dropout=0.3,
             batch_first=True
         )
 
@@ -64,7 +65,10 @@ class MobileNetTransformer(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.LayerNorm(self.encoder.output_dim),
-            nn.Linear(self.encoder.output_dim, num_classes)
+            nn.Linear(self.encoder.output_dim, 512),
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
         )
 
     def forward(self, x):

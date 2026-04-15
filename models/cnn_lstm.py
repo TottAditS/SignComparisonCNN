@@ -11,8 +11,30 @@ class CNN_Encoder(nn.Module):
         super().__init__()
 
         base_model = resnet18(weights=ResNet18_Weights.DEFAULT)
-        modules = list(base_model.children())[:-1]
-        self.cnn = nn.Sequential(*modules)
+
+        # ambil conv pertama
+        first_conv = base_model.conv1
+
+        # bikin conv baru (6 channel)
+        new_conv = nn.Conv2d(
+            in_channels=6,
+            out_channels=first_conv.out_channels,
+            kernel_size=first_conv.kernel_size,
+            stride=first_conv.stride,
+            padding=first_conv.padding,
+            bias=False
+        )
+
+        # copy weight RGB → ke 6 channel
+        with torch.no_grad():
+            new_conv.weight[:, :3] = first_conv.weight
+            new_conv.weight[:, 3:] = first_conv.weight
+
+        # replace conv1
+        base_model.conv1 = new_conv
+
+        # ambil semua layer kecuali FC
+        self.cnn = nn.Sequential(*list(base_model.children())[:-1])
 
         self.fc = nn.Sequential(
             nn.Linear(512, feature_dim),
