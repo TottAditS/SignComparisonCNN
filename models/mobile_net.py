@@ -11,6 +11,28 @@ class MobileNetEncoder(nn.Module):
             weights=models.MobileNet_V2_Weights.DEFAULT
         )
 
+<<<<<<< HEAD
+        # ===== PATCH FIRST CONV (3 → 6 channel) =====
+        first_conv = base_model.features[0][0]
+
+        new_conv = nn.Conv2d(
+            in_channels=6,
+            out_channels=first_conv.out_channels,
+            kernel_size=first_conv.kernel_size,
+            stride=first_conv.stride,
+            padding=first_conv.padding,
+            bias=False
+        )
+
+        with torch.no_grad():
+            new_conv.weight[:, :3] = first_conv.weight
+            new_conv.weight[:, 3:] = first_conv.weight
+
+        base_model.features[0][0] = new_conv
+        # ============================================
+
+=======
+>>>>>>> parent of b2a8462 (Mobile Net Fine Tune Checkpoint)
         self.features = base_model.features
         self.pool = nn.AdaptiveAvgPool2d((1, 1))
 
@@ -55,8 +77,17 @@ class MobileNetTransformer(nn.Module):
 
         self.encoder = MobileNetEncoder()
 
+<<<<<<< HEAD
+        #  PROJECTION (WAJIB)
+        self.proj = nn.Linear(1280, 512)
+
+        #  posisi embedding sesuai dim baru
+        self.pos_embedding = nn.Parameter(
+            torch.randn(1, seq_len, 512) * 0.02
+=======
         self.pos_embedding = nn.Parameter(
             torch.randn(1, seq_len, self.encoder.output_dim)
+>>>>>>> parent of b2a8462 (Mobile Net Fine Tune Checkpoint)
         )
 
         self.transformer = TransformerHead(
@@ -75,14 +106,25 @@ class MobileNetTransformer(nn.Module):
         # (B, T, C, H, W)
         x = self.encoder(x)
 
+<<<<<<< HEAD
+        #  projection dulu
+        x = self.proj(x)
+
+=======
+>>>>>>> parent of b2a8462 (Mobile Net Fine Tune Checkpoint)
         # positional encoding
         x = x + self.pos_embedding[:, :x.size(1), :]
 
         # transformer
         x = self.transformer(x)
 
+<<<<<<< HEAD
+        # pooling
+        x = x[:, -1, :]
+=======
         # pooling (lebih stabil)
         x = x.mean(dim=1)
+>>>>>>> parent of b2a8462 (Mobile Net Fine Tune Checkpoint)
 
         x = self.classifier(x)
 
