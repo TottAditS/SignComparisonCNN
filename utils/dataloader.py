@@ -43,7 +43,7 @@ class VideoDataset(Dataset):
 
         frame_list = sorted(os.listdir(vid_path))
 
-        # 🔥 FRAME SAMPLING (FIXED)
+        # FRAME SAMPLING (FIXED)
         if len(frame_list) >= self.seq_len:
             indices = torch.linspace(0, len(frame_list) - 1, self.seq_len).long()
             frames = [frame_list[i] for i in indices]
@@ -52,7 +52,7 @@ class VideoDataset(Dataset):
 
         imgs = []
 
-        # 🔥 SEQUENCE-CONSISTENT AUGMENTATION
+        # SEQUENCE-CONSISTENT AUGMENTATION
         seed = torch.randint(0, 10000, (1,)).item()
 
         for frame in frames:
@@ -74,7 +74,7 @@ class VideoDataset(Dataset):
         return imgs, label
 
 
-# 🔥 TRANSFORMS DIPISAH
+# TRANSFORMS DIPISAH
 def get_transforms():
     train_transform = transforms.Compose([
         transforms.Resize((224, 224)),

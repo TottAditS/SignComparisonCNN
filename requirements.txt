@@ -3,9 +3,6 @@ torch
 torchvision
 torchaudio
 
-# --- YOLO Ultralytics ---
-ultralytics
-
 # --- Computer Vision & Image Processing ---
 opencv-python
 numpy

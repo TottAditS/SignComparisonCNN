@@ -20,7 +20,7 @@ SEQ_LEN = 20
 
 MODEL_PATH = os.path.join(
     BASE_DIR,
-    "outputs/logs/cnn_lstm/run_20260408_235004/best_model.pth"
+    "outputs/logs/cnn_lstm/run_20260409_111427/best_model.pth"
 )
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
