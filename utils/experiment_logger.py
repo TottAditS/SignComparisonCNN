@@ -1,7 +1,6 @@
 import os
 import csv
 from datetime import datetime
-
 def log_experiment(metrics, model_name, save_dir):
     os.makedirs(save_dir, exist_ok=True)
 

@@ -4,7 +4,6 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import torchvision.transforms as transforms
 
-
 class VideoDataset(Dataset):
     def __init__(self, root_dir, seq_len=20, transform=None):
         self.root_dir = root_dir
