@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
 
+
+# =========================
+# CNN ENCODER (UPGRADE)
+# =========================
 class CNN_Encoder(nn.Module):
     def __init__(self, feature_dim=512):
         super().__init__()
@@ -10,7 +14,12 @@ class CNN_Encoder(nn.Module):
         modules = list(base_model.children())[:-1]
         self.cnn = nn.Sequential(*modules)
 
-        self.fc = nn.Linear(512, feature_dim)
+        self.fc = nn.Sequential(
+            nn.Linear(512, feature_dim),
+            nn.BatchNorm1d(feature_dim),
+            nn.ReLU(),
+            nn.Dropout(0.5)
+        )
 
     def forward(self, x):
         x = self.cnn(x)
@@ -19,20 +28,31 @@ class CNN_Encoder(nn.Module):
         return x
 
 
+# =========================
+# ATTENTION (UPGRADE)
+# =========================
 class Attention(nn.Module):
     def __init__(self, hidden_dim):
         super().__init__()
-        self.attn = nn.Linear(hidden_dim, 1)
+
+        self.attn = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.Tanh(),
+            nn.Linear(hidden_dim, 1)
+        )
 
     def forward(self, lstm_out):
-        # lstm_out: (B, T, H)
-        weights = torch.softmax(self.attn(lstm_out), dim=1)  # (B, T, 1)
-        context = (lstm_out * weights).sum(dim=1)            # (B, H)
+        # (B, T, H)
+        weights = torch.softmax(self.attn(lstm_out), dim=1)
+        context = (lstm_out * weights).sum(dim=1)
         return context
 
 
+# =========================
+# MAIN MODEL (UPGRADE)
+# =========================
 class CNN_LSTM(nn.Module):
-    def __init__(self, num_classes, hidden_dim=128):
+    def __init__(self, num_classes, hidden_dim=256):  # ⬅️ naik dari 128
         super().__init__()
 
         self.encoder = CNN_Encoder()
@@ -42,32 +62,31 @@ class CNN_LSTM(nn.Module):
             hidden_size=hidden_dim,
             num_layers=2,
             batch_first=True,
-            dropout=0.3
+            dropout=0.5  # ⬅️ lebih kuat
         )
 
         self.attention = Attention(hidden_dim)
 
         self.classifier = nn.Sequential(
-            nn.Linear(hidden_dim, 128),
+            nn.Linear(hidden_dim, 256),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, num_classes)
+            nn.BatchNorm1d(256),
+            nn.Dropout(0.5),
+            nn.Linear(256, num_classes)
         )
 
     def forward(self, x):
         B, T, C, H, W = x.shape
 
-        # reshape ke CNN
         x = x.view(B * T, C, H, W)
 
         features = self.encoder(x)  # (B*T, 512)
 
-        # balik ke sequence
-        features = features.view(B, T, -1)  # (B, T, 512)
+        features = features.view(B, T, -1)
 
-        lstm_out, _ = self.lstm(features)  # (B, T, H)
+        lstm_out, _ = self.lstm(features)
 
-        context = self.attention(lstm_out)  # (B, H)
+        context = self.attention(lstm_out)
 
         out = self.classifier(context)
 
