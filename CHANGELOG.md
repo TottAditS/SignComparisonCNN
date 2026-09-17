@@ -55,6 +55,12 @@ Each run resets to its model's baseline defaults and changes exactly one field �
 
 Run sequentially (not in parallel) to avoid GPU contention. Together with the two baselines, these 8 runs are sufficient for all four comparison sections in `train/model_evaluation.ipynb`. Combined-variant runs (e.g. MobileNet with unfreeze full + pooling attention + optical flow at once) can be added separately as exploratory "best combination" runs, but do not replace the single-variable ablations above — the two answer different questions.
 
+## MobileNetTransformer training speed (mixed precision)
+
+The preserved MobileNet baseline (`run_20260415_201349`) trained the full 50/50 epochs (val accuracy was still improving at epoch 45), so its wall-clock cost is inherent to the number of epochs needed to converge, not wasted epochs from a loose early-stopping setting. To make the 4 upcoming MobileNet ablation runs (rows 2, 3, 4, 6 below) practical to run, `train/train_mobilenet.ipynb` now trains with automatic mixed precision when CUDA is available (`CONFIG["use_amp"] = True`, `torch.amp.autocast` + `GradScaler`) and a slightly more responsive LR schedule (`scheduler_patience`: 2 → 1). Measured on this project's model/input shape (batch=8, seq_len=20, RTX-class GPU): **1.74x faster per training step** (107.7ms → 62.0ms).
+
+This is a deliberate, documented deviation from bit-for-bit reproduction of the original baseline recipe, traded for speed — not one of the studied ablation variables (fine-tuning depth / pooling / motion representation). `use_amp` and the new `scheduler_patience` value are recorded in every new run's `config.json` for traceability. `train_cnn_lstm.ipynb` is unchanged (fp32, `scheduler_patience=2`) since CNN_LSTM training speed was not reported as a bottleneck.
+
 ## Status
 
 Data (`data/WLBisindo/split/{train,val,test}`) is prepared. Two baseline runs are complete. The 6-run ablation protocol above has not yet been executed.
