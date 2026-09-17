@@ -46,6 +46,58 @@ class CNN_Encoder(nn.Module):
         x = self.fc(x)
         return x
 
+    def set_trainable_blocks(self, num_unfrozen_blocks=None):
+        """
+        Freeze/unfreeze the ResNet18 backbone (self.cnn) by top-level block,
+        for controlled fine-tuning-depth ablations comparable to
+        MobileNetEncoder.set_trainable_blocks() in models/mobile_net.py.
+
+        The original codebase fully unfroze ResNet18 for CNN_LSTM but only
+        unfroze MobileNetV2's last 4 blocks for MobileNetTransformer
+        (see train/train_cnn.ipynb vs train/train_mobile_net.ipynb) -- an
+        unmatched comparison. This method lets both encoders be fine-tuned to
+        the same controllable depth.
+
+        num_unfrozen_blocks:
+            None -> unfreeze everything (full fine-tune; this codebase's
+                    original CNN_LSTM behaviour).
+            0    -> freeze the entire backbone (pure feature extractor).
+            N>0  -> unfreeze only the last N top-level children of self.cnn
+                    (children order: conv1, bn1, relu, maxpool, layer1,
+                    layer2, layer3, layer4, avgpool -- 9 total), keeping
+                    earlier ones frozen. Mirrors
+                    model.encoder.features[-N:] on the MobileNet side.
+
+        self.fc (the projection head) is always left trainable, since it has
+        no pretrained weights of its own.
+
+        Returns the total number of top-level blocks (for reference/logging).
+        """
+        blocks = list(self.cnn.children())
+        total = len(blocks)
+
+        if num_unfrozen_blocks is None or num_unfrozen_blocks >= total:
+            for p in self.cnn.parameters():
+                p.requires_grad = True
+            return total
+
+        if num_unfrozen_blocks < 0:
+            raise ValueError("num_unfrozen_blocks must be >= 0 or None")
+
+        for p in self.cnn.parameters():
+            p.requires_grad = False
+
+        if num_unfrozen_blocks > 0:
+            for block in blocks[-num_unfrozen_blocks:]:
+                for p in block.parameters():
+                    p.requires_grad = True
+
+        return total
+
+    @property
+    def num_blocks(self):
+        return len(list(self.cnn.children()))
+
 # ATTENTION
 
 class Attention(nn.Module):

@@ -1,0 +1,10 @@
+# Dataset (raw video, extracted frames, splits) — too large for git, regenerate via scripts/
+data/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
