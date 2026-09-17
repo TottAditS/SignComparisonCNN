@@ -122,4 +122,4 @@ train_mobilenet.ipynb   : motion_mode="optical_flow"     -> motion representatio
 
 Juga menampilkan ringkasan dari `efficiency_comparison__*.json` dan `statistical_analysis__*.json` kalau sudah ada (hasil dari notebook evaluation di atas). Ini dashboard tunggal yang jadi tempat lihat semua hasil novelty sebelum dituliskan ke paper.
 
-Detail lengkap, riwayat perubahan, dan status implementasi ada di `PROGRESS.md`.
+Detail lengkap, riwayat perubahan, dan status implementasi ada di `CHANGELOG.md`.
