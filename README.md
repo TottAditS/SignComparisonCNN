@@ -1,103 +1,103 @@
 # SignComparisonCNN — BISINDO Sign Recognition
 
-Perbandingan dua arsitektur deep learning untuk pengenalan kata BISINDO (isolated word/gloss) dari video: **CNN_LSTM** (ResNet18 + LSTM + Attention) vs **MobileNetTransformer** (MobileNetV2 + Transformer). Dataset self-collected "WLBisindo", 32 kelas kata.
+Comparison of two deep learning architectures for BISINDO isolated word/gloss recognition from video: **CNN_LSTM** (ResNet18 + LSTM + Attention) vs **MobileNetTransformer** (MobileNetV2 + Transformer). Self-collected "WLBisindo" dataset, 32 word classes.
 
-## Struktur Proyek
+## Project Structure
 
 ```
 data/WLBisindo/
-  raw/<label>/<video>.mp4     # video mentah, sebelum diproses
-  frames/<label>/<video>/*.jpg  # hasil ekstraksi frame
-  split/{train,val,test}/<label>/<video>/*.jpg  # hasil split dataset
-  classes.csv                  # daftar 32 kelas (urutan semantik, bukan urutan label training)
+  raw/<label>/<video>.mp4     # raw video, before preprocessing
+  frames/<label>/<video>/*.jpg  # extracted frames
+  split/{train,val,test}/<label>/<video>/*.jpg  # dataset split
+  classes.csv                  # list of 32 classes (semantic order, not the training label order)
 models/
   cnn_lstm.py                  # CNN_LSTM (ResNet18 + LSTM + Attention)
   mobile_net.py                # MobileNetTransformer (MobileNetV2 + Transformer)
 utils/
-  dataloader.py                # VideoDataset, augmentasi, motion_mode (diff/optical_flow)
+  dataloader.py                # VideoDataset, augmentation, motion_mode (diff/optical_flow)
   losses.py                    # FocalLoss
-  metrics.py, evaluate.py, experiment_logger.py
-  EDA.ipynb                    # eksplorasi data
+  metrics.py, experiment_logger.py
+  EDA.ipynb                    # data exploration
 scripts/
-  extract_frames.ipynb         # ekstraksi frame dari raw video
-  split_dataset.ipynb          # split train/val/test
+  extract_frames.ipynb         # extract frames from raw video
+  split_dataset.ipynb          # train/val/test split
 train/
-  train_cnn_lstm.ipynb         # training CNN_LSTM (baseline + ablasi)
-  train_mobilenet.ipynb        # training MobileNetTransformer (baseline + ablasi)
-  model_evaluation.ipynb       # dashboard: kumpulkan semua run (config+metrik) kedua model
+  train_cnn_lstm.ipynb         # CNN_LSTM training (baseline + ablations)
+  train_mobilenet.ipynb        # MobileNetTransformer training (baseline + ablations)
+  model_evaluation.ipynb       # dashboard: aggregates every run (config+metrics) for both models
 evaluation/
   efficiency_benchmark.ipynb   # params/FLOPs/latency
   statistical_analysis.ipynb   # per-class + McNemar's test + bootstrap CI
 outputs/
   logs/<cnn_lstm|mobile_net>/run_<timestamp>[_<tag>]/  # checkpoint & log per run
-  metrics/experiments.csv      # ringkasan semua run
+  metrics/experiments.csv      # summary of every run
 ```
 
-## Setup Environment
+## Environment Setup
 
-Environment yang dipakai: conda env `bisindo`.
+Environment used: conda env `bisindo`.
 
 ```powershell
 conda activate bisindo
 pip install -r requirements.txt
 ```
 
-Cek CUDA tersedia (opsional, training jauh lebih cepat dengan GPU):
+Check CUDA availability (optional, training is much faster with a GPU):
 ```powershell
 python -c "import torch; print(torch.cuda.is_available())"
 ```
 
-## Cara Replikasi Dari Awal (dataset baru / dataset kosong)
+## Replicating From Scratch (new / empty dataset)
 
-Jika `data/WLBisindo/split/` belum ada isinya, lakukan langkah ini dulu sebelum training. Kalau dataset sudah ter-split (cek folder `data/WLBisindo/split/{train,val,test}/`), langsung lompat ke bagian **Training**.
+If `data/WLBisindo/split/` is empty, do these steps first before training. If the dataset is already split (check the `data/WLBisindo/split/{train,val,test}/` folders), skip straight to the **Training** section.
 
-1. **Siapkan video mentah.** Taruh video per kelas di `data/WLBisindo/raw/<nama_label>/<video>.mp4`. Kalau pakai dataset/nama folder berbeda, sesuaikan path di `scripts/extract_frames.ipynb`.
-2. **Ekstraksi frame.** Buka `scripts/extract_frames.ipynb`, **Run All**. Frame diambil dari 60% tengah video, difilter motion+blur, disimpan ke `data/WLBisindo/frames/<label>/<video>/*.jpg`.
-3. **Cek kualitas data (opsional).** Buka `utils/EDA.ipynb`, **Run All** — lihat distribusi jumlah video per kelas, deteksi ketidakseimbangan kelas, dll.
-4. **Split dataset.** Buka `scripts/split_dataset.ipynb`, **Run All**. Membagi `frames/` menjadi `split/train`, `split/val`, `split/test` (70/15/15, stratified per kelas).
-5. Lanjut ke bagian **Training** di bawah.
+1. **Prepare raw video.** Place videos per class at `data/WLBisindo/raw/<label_name>/<video>.mp4`. If using a different dataset/folder naming, adjust the paths in `scripts/extract_frames.ipynb`.
+2. **Extract frames.** Open `scripts/extract_frames.ipynb`, **Run All**. Frames are taken from the middle 60% of each video, filtered by motion+blur, and saved to `data/WLBisindo/frames/<label>/<video>/*.jpg`.
+3. **Check data quality (optional).** Open `utils/EDA.ipynb`, **Run All** — inspect the video-count distribution per class, detect class imbalance, etc.
+4. **Split the dataset.** Open `scripts/split_dataset.ipynb`, **Run All**. Splits `frames/` into `split/train`, `split/val`, `split/test` (70/15/15, stratified per class).
+5. Continue to the **Training** section below.
 
-## Cara Run — Training Model
+## How to Run — Model Training
 
-Training sekarang dalam bentuk notebook dengan cell `CONFIG` di bagian atas, jadi satu notebook bisa mereproduksi baseline ATAU menjalankan varian ablasi novelty, tergantung isi `CONFIG`.
+Training now lives in notebooks with a `CONFIG` cell at the top, so a single notebook can either reproduce the baseline OR run a novelty ablation variant, depending on what's in `CONFIG`.
 
-1. Buka `train/train_cnn_lstm.ipynb` (untuk CNN_LSTM) atau `train/train_mobilenet.ipynb` (untuk MobileNetTransformer) di PyCharm/Jupyter.
-2. Pastikan kernel/interpreter memakai environment `bisindo`.
-3. Edit cell **`CONFIG`** kalau perlu (default sudah mereproduksi baseline asli — biarkan default untuk training baseline biasa):
-   - `unfreeze_blocks`: `"full"` (fine-tune seluruh backbone) atau angka N (fine-tune N block terakhir saja).
-   - `motion_mode`: `"diff"` (default) atau `"optical_flow"`.
-   - `pooling` (khusus MobileNetTransformer): `"last"` (default) / `"mean"` / `"attention"`.
-   - `run_tag`: label buat nama folder run, misal `"unfreeze-4"` — kosongkan untuk nama default `run_<timestamp>`.
-4. **Run All**. Progress training terlihat cell-per-cell (progress bar tqdm per epoch, log tercetak di output cell).
-5. Setelah selesai, cek folder baru di `outputs/logs/<cnn_lstm|mobile_net>/run_<timestamp>[_<tag>]/` — isinya `best_model.pth`, `last_model.pth`, `config.json`, `evaluation.json` (val), `test_eval.json` (test), `classification_report.txt`, `confusion_matrix.png`, `log.txt`.
-6. Baris baru otomatis ditambahkan ke `outputs/metrics/experiments.csv`.
+1. Open `train/train_cnn_lstm.ipynb` (for CNN_LSTM) or `train/train_mobilenet.ipynb` (for MobileNetTransformer) in PyCharm/Jupyter.
+2. Make sure the kernel/interpreter uses the `bisindo` environment.
+3. Edit the **`CONFIG`** cell if needed (the defaults already reproduce the original baseline — leave them as-is for a plain baseline run):
+   - `unfreeze_blocks`: `"full"` (fine-tune the whole backbone) or an integer N (fine-tune only the last N blocks).
+   - `motion_mode`: `"diff"` (default) or `"optical_flow"`.
+   - `pooling` (MobileNetTransformer only): `"last"` (default) / `"mean"` / `"attention"`.
+   - `run_tag`: label used in the run folder name, e.g. `"unfreeze-4"` — leave empty for the default `run_<timestamp>` name.
+4. **Run All**. Training progress is visible cell-by-cell (tqdm progress bar per epoch, log printed in the cell output).
+5. Once finished, check the new folder under `outputs/logs/<cnn_lstm|mobile_net>/run_<timestamp>[_<tag>]/` — it contains `best_model.pth`, `last_model.pth`, `config.json`, `evaluation.json` (val), `test_eval.json` (test), `classification_report.txt`, `confusion_matrix.png`, `log.txt`.
+6. A new row is automatically appended to `outputs/metrics/experiments.csv`.
 
-**Pantau progress live via TensorBoard** (jalankan di terminal terpisah sambil training berjalan):
+**Monitor progress live via TensorBoard** (run in a separate terminal while training is in progress):
 ```powershell
 tensorboard --logdir=outputs/logs
 ```
-Buka `http://localhost:6006`. Log (`Loss`, `Accuracy`, `Overfitting/gap`, `LR`, histogram `Weights`/`Grads`) di-flush tiap akhir epoch, jadi grafik ter-update live.
+Open `http://localhost:6006`. Logs (`Loss`, `Accuracy`, `Overfitting/gap`, `LR`, `Weights`/`Grads` histograms) are flushed at the end of every epoch, so the charts update live.
 
 ---
 
-## Novelty Additions (untuk submission conference/journal Scopus)
+## Novelty Additions (for a Scopus conference/journal submission)
 
-Empat penambahan berikut melengkapi perbandingan CNN_LSTM vs MobileNetTransformer yang sudah ada, mengisi gap yang biasanya ditanya reviewer (efisiensi, signifikansi statistik, fairness perbandingan, dan ablasi motion representation). Semuanya berbentuk **notebook** (`.ipynb`), dijalankan dengan Jupyter/PyCharm seperti notebook training lama, supaya progressnya kelihatan cell-per-cell.
+The following four additions round out the existing CNN_LSTM vs MobileNetTransformer comparison, filling gaps reviewers typically ask about (efficiency, statistical significance, comparison fairness, and a motion representation ablation). All of them are **notebooks** (`.ipynb`), run with Jupyter/PyCharm just like the older training notebooks, so progress stays visible cell-by-cell.
 
-Notebook lama `train_cnn.ipynb` dan `train_mobile_net.ipynb` sudah **digantikan** oleh `train/train_cnn_lstm.ipynb` dan `train/train_mobilenet.ipynb` di bawah — keduanya bisa reproduce baseline asli (default config) sekaligus semua varian ablasi (lewat cell `CONFIG`).
+The old `train_cnn.ipynb` and `train_mobile_net.ipynb` notebooks have been **replaced** by `train/train_cnn_lstm.ipynb` and `train/train_mobilenet.ipynb` below — both can reproduce the original baseline (default config) as well as every ablation variant (via the `CONFIG` cell).
 
-### 1 & 2. Training dengan ablasi (Novelty #2 fairness/pooling, #4 optical flow)
+### 1 & 2. Training with ablations (Novelty #2 fairness/pooling, #4 optical flow)
 
-Pakai cara pakai yang sama dengan bagian **Cara Run — Training Model** di atas, cuma isi cell `CONFIG` sesuai varian ablasi yang mau dicoba. Field yang tersedia:
-- `unfreeze_blocks`: `"full"` (baseline) atau angka N (fine-tuning depth ablation).
-- `motion_mode`: `"diff"` (baseline) atau `"optical_flow"` (motion representation ablation).
-- `pooling` (khusus `train_mobilenet.ipynb`): `"last"` (baseline) / `"mean"` / `"attention"` (pooling ablation).
-- `transformer_layers` (khusus `train_mobilenet.ipynb`): jumlah layer Transformer (baseline: 4).
+Same usage as the **How to Run — Model Training** section above, just fill in the `CONFIG` cell for whichever ablation variant you want to try. Available fields:
+- `unfreeze_blocks`: `"full"` (baseline) or an integer N (fine-tuning depth ablation).
+- `motion_mode`: `"diff"` (baseline) or `"optical_flow"` (motion representation ablation).
+- `pooling` (`train_mobilenet.ipynb` only): `"last"` (baseline) / `"mean"` / `"attention"` (pooling ablation).
+- `transformer_layers` (`train_mobilenet.ipynb` only): number of Transformer layers (baseline: 4).
 
-Kombinasi ablasi yang direkomendasikan untuk paper:
+Recommended ablation combinations for the paper:
 ```
 train_mobilenet.ipynb   : unfreeze_blocks="full"        -> fairness-matched vs CNN_LSTM baseline
-train_cnn_lstm.ipynb    : unfreeze_blocks=4              -> fairness-matched arah sebaliknya
+train_cnn_lstm.ipynb    : unfreeze_blocks=4              -> fairness-matched, other direction
 train_mobilenet.ipynb   : pooling="mean"                 -> pooling ablation
 train_mobilenet.ipynb   : pooling="attention"            -> pooling ablation
 train_cnn_lstm.ipynb    : motion_mode="optical_flow"     -> motion representation ablation
@@ -106,20 +106,20 @@ train_mobilenet.ipynb   : motion_mode="optical_flow"     -> motion representatio
 
 ### 3. Efficiency comparison (Novelty #1)
 
-`evaluation/efficiency_benchmark.ipynb` — bandingkan params, FLOPs (`torch.profiler` + koreksi manual LSTM), dan latency CPU/CUDA dari dua checkpoint. Edit cell `CNN_CKPT` / `MOBILENET_CKPT` untuk pilih pasangan run yang mau dibandingkan (default: run terbaru masing-masing model), lalu **Run All**. Arsitektur MobileNet (`pooling`, `transformer_layers`) dibaca otomatis dari `config.json` checkpoint. Output: `outputs/metrics/efficiency_comparison__<run1>__vs__<run2>.json`.
+`evaluation/efficiency_benchmark.ipynb` — compares parameter counts, FLOPs (`torch.profiler` + a manual LSTM correction), and CPU/CUDA latency for two checkpoints. Edit the `CNN_CKPT` / `MOBILENET_CKPT` cell to pick which pair of runs to compare (default: each model's most recent run), then **Run All**. The MobileNet architecture (`pooling`, `transformer_layers`) is read automatically from the checkpoint's `config.json`. Output: `outputs/metrics/efficiency_comparison__<run1>__vs__<run2>.json`.
 
 ### 4. Per-class analysis + statistical significance (Novelty #3)
 
-`evaluation/statistical_analysis.ipynb` — evaluasi dua checkpoint pada sample test yang sama (paired), lalu hitung per-class precision/recall/F1, confusion matrix, kelas yang paling sering tertukar, **McNemar's test**, dan **paired bootstrap CI** untuk selisih akurasi. Edit cell `CNN_CKPT` / `MOBILENET_CKPT`, lalu **Run All**. Otomatis menangani checkpoint dengan `motion_mode` yang berbeda antar model. Output: `outputs/metrics/statistical_analysis__<run1>__vs__<run2>.json` dan `per_class_report__<run1>__vs__<run2>.csv`.
+`evaluation/statistical_analysis.ipynb` — evaluates two checkpoints on the same (paired) test samples, then computes per-class precision/recall/F1, confusion matrices, the most frequently confused classes, **McNemar's test**, and a **paired bootstrap CI** for the accuracy difference. Edit the `CNN_CKPT` / `MOBILENET_CKPT` cell, then **Run All**. Automatically handles checkpoints trained with different `motion_mode` values across models. Output: `outputs/metrics/statistical_analysis__<run1>__vs__<run2>.json` and `per_class_report__<run1>__vs__<run2>.csv`.
 
-### Dashboard perbandingan semua run
+### Dashboard comparing every run
 
-`train/model_evaluation.ipynb` — **Run All** setelah training run apa pun (baseline atau ablasi). Otomatis scan semua folder `outputs/logs/{cnn_lstm,mobile_net}/run_*/`, baca `config.json` + `evaluation.json` + `test_eval.json` tiap run, gabung jadi satu tabel (disimpan ke `outputs/metrics/run_comparison.csv`), lalu tampilkan 4 perbandingan siap pakai untuk paper:
+`train/model_evaluation.ipynb` — **Run All** after any training run (baseline or ablation). Automatically scans every `outputs/logs/{cnn_lstm,mobile_net}/run_*/` folder, reads each run's `config.json` + `evaluation.json` + `test_eval.json`, merges them into one table (saved to `outputs/metrics/run_comparison.csv`), then displays four paper-ready comparisons:
 - Baseline CNN_LSTM vs MobileNetTransformer (test set)
-- Fairness-matched fine-tuning depth (pasangan run dengan `unfreeze_blocks` sama di kedua model)
+- Fairness-matched fine-tuning depth (run pairs sharing the same `unfreeze_blocks` across both models)
 - Pooling ablation (`last` vs `mean` vs `attention`, MobileNetTransformer)
-- Motion representation ablation (`diff` vs `optical_flow`, kedua model)
+- Motion representation ablation (`diff` vs `optical_flow`, both models)
 
-Juga menampilkan ringkasan dari `efficiency_comparison__*.json` dan `statistical_analysis__*.json` kalau sudah ada (hasil dari notebook evaluation di atas). Ini dashboard tunggal yang jadi tempat lihat semua hasil novelty sebelum dituliskan ke paper.
+Also surfaces a summary of `efficiency_comparison__*.json` and `statistical_analysis__*.json` if they already exist (produced by the evaluation notebooks above). This is the single dashboard for reviewing every novelty result before writing it up in the paper.
 
-Detail lengkap, riwayat perubahan, dan status implementasi ada di `CHANGELOG.md`.
+Full details, change history, and implementation status are in `CHANGELOG.md`.

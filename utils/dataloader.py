@@ -74,7 +74,7 @@ class VideoDataset(Dataset):
                 if not os.path.isdir(vid_path):
                     continue
 
-                # test apakah ada frame (dan cache hasilnya, dipakai lagi di __getitem__)
+                # check whether there are any frames (and cache the result, reused in __getitem__)
                 frames = sorted(f for f in os.listdir(vid_path) if f.endswith(".jpg"))
                 if len(frames) == 0:
                     continue
@@ -158,7 +158,7 @@ class VideoDataset(Dataset):
         prev_img = None    # previous NORMALIZED RGB tensor, used when motion_mode == "diff"
         prev_gray = None   # previous uint8 grayscale frame, used when motion_mode == "optical_flow"
 
-        # seed augment konsisten per sequence
+        # consistent augmentation seed per sequence
         seed = torch.randint(0, 10000, (1,)).item()
 
         for frame in frames:
@@ -193,7 +193,7 @@ class VideoDataset(Dataset):
 
             imgs.append(img_6ch)
 
-        # ===== HANDLE FRAME KOSONG =====
+        # ===== HANDLE EMPTY FRAMES =====
         if len(imgs) == 0:
             dummy = torch.zeros(6, 224, 224)
             imgs = [dummy for _ in range(self.seq_len)]
@@ -208,7 +208,7 @@ class VideoDataset(Dataset):
 
 
 
-# Augmentasi Pre Process Dataset
+# Dataset Preprocessing Augmentation
 
 def get_transforms():
     train_transform = transforms.Compose([
