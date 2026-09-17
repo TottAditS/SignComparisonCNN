@@ -1,0 +1,208 @@
+Backbone top-level blocks: 19; unfreeze_blocks=full
+Pooling: last; transformer_layers: 4
+Trainable params: 15,640,960 / 15,640,960
+Mixed precision (AMP) enabled: True
+
+Epoch 1/50
+Train Loss: 3.2525 | Acc: 0.0392
+Val   Loss: 2.8375 | Acc: 0.0495
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 2/50
+Train Loss: 3.0834 | Acc: 0.0470
+Val   Loss: 2.7827 | Acc: 0.0440
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 3/50
+Train Loss: 2.9697 | Acc: 0.0862
+Val   Loss: 2.6502 | Acc: 0.0824
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 4/50
+Train Loss: 2.8210 | Acc: 0.1299
+Val   Loss: 2.4583 | Acc: 0.1044
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 5/50
+Train Loss: 2.5910 | Acc: 0.1792
+Val   Loss: 2.2366 | Acc: 0.1538
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 6/50
+Train Loss: 2.2828 | Acc: 0.1825
+Val   Loss: 1.9462 | Acc: 0.2363
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 7/50
+Train Loss: 2.1465 | Acc: 0.2228
+Val   Loss: 1.7409 | Acc: 0.3242
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 8/50
+Train Loss: 1.8528 | Acc: 0.3393
+Val   Loss: 1.5614 | Acc: 0.3297
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 9/50
+Train Loss: 1.6532 | Acc: 0.3684
+Val   Loss: 1.2967 | Acc: 0.4341
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 10/50
+Train Loss: 1.4580 | Acc: 0.4087
+Val   Loss: 1.1257 | Acc: 0.4725
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 11/50
+Train Loss: 1.2840 | Acc: 0.4703
+Val   Loss: 0.9876 | Acc: 0.5385
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 12/50
+Train Loss: 1.1345 | Acc: 0.5241
+Val   Loss: 0.8757 | Acc: 0.5495
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 13/50
+Train Loss: 1.0116 | Acc: 0.5498
+Val   Loss: 0.7940 | Acc: 0.5769
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 14/50
+Train Loss: 0.8915 | Acc: 0.5778
+Val   Loss: 0.6764 | Acc: 0.6593
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 15/50
+Train Loss: 0.7879 | Acc: 0.6159
+Val   Loss: 0.6222 | Acc: 0.6758
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 16/50
+Train Loss: 0.6514 | Acc: 0.6865
+Val   Loss: 0.5651 | Acc: 0.7363
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 17/50
+Train Loss: 0.5983 | Acc: 0.6865
+Val   Loss: 0.5191 | Acc: 0.7143
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 18/50
+Train Loss: 0.4992 | Acc: 0.7357
+Val   Loss: 0.5128 | Acc: 0.7253
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 19/50
+Train Loss: 0.4378 | Acc: 0.7536
+Val   Loss: 0.4060 | Acc: 0.8077
+LR: 3e-05
+----------------------------------------
+Best model saved!
+
+Epoch 20/50
+Train Loss: 0.4042 | Acc: 0.7749
+Val   Loss: 0.4520 | Acc: 0.7802
+LR: 3e-05
+----------------------------------------
+EarlyStopping counter: 1/3
+
+Epoch 21/50
+Train Loss: 0.3560 | Acc: 0.7973
+Val   Loss: 0.4106 | Acc: 0.8352
+LR: 3e-05
+----------------------------------------
+EarlyStopping counter: 2/3
+
+Epoch 22/50
+Train Loss: 0.3201 | Acc: 0.8141
+Val   Loss: 0.3721 | Acc: 0.8571
+LR: 1.5e-05
+----------------------------------------
+Best model saved!
+
+Epoch 23/50
+Train Loss: 0.2875 | Acc: 0.8208
+Val   Loss: 0.3323 | Acc: 0.8626
+LR: 1.5e-05
+----------------------------------------
+Best model saved!
+
+Epoch 24/50
+Train Loss: 0.2401 | Acc: 0.8455
+Val   Loss: 0.3332 | Acc: 0.8681
+LR: 1.5e-05
+----------------------------------------
+EarlyStopping counter: 1/3
+
+Epoch 25/50
+Train Loss: 0.2196 | Acc: 0.8544
+Val   Loss: 0.3429 | Acc: 0.8846
+LR: 1.5e-05
+----------------------------------------
+EarlyStopping counter: 2/3
+
+Epoch 26/50
+Train Loss: 0.2028 | Acc: 0.8746
+Val   Loss: 0.3054 | Acc: 0.8956
+LR: 7.5e-06
+----------------------------------------
+Best model saved!
+
+Epoch 27/50
+Train Loss: 0.1888 | Acc: 0.8824
+Val   Loss: 0.3258 | Acc: 0.8901
+LR: 7.5e-06
+----------------------------------------
+EarlyStopping counter: 1/3
+
+Epoch 28/50
+Train Loss: 0.1649 | Acc: 0.8981
+Val   Loss: 0.3143 | Acc: 0.8901
+LR: 7.5e-06
+----------------------------------------
+EarlyStopping counter: 2/3
+
+Epoch 29/50
+Train Loss: 0.1653 | Acc: 0.8903
+Val   Loss: 0.3152 | Acc: 0.8901
+LR: 3.75e-06
+----------------------------------------
+EarlyStopping counter: 3/3
+Early stopping triggered!
